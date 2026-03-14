@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Plane } from "lucide-react";
+import { Boxes } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -53,19 +53,16 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-300 via-sky-200 to-white relative overflow-hidden font-[Inter]">
-
-      <div className="cloud cloud1"></div>
-      <div className="cloud cloud2"></div>
-      <div className="cloud cloud3"></div>
-
-      <Card className="w-full max-w-sm bg-white/40 backdrop-blur-xl border-white/40 shadow-xl">
+    <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+      <Card className="w-full max-w-sm" >
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg text-black">Sign up and get tripping!</CardTitle>
+              <CardTitle className="text-lg text-black">Sign up and stay stocked!</CardTitle>
             </div>
-            <Plane className="w-10 h-10 text-black" />
+            <Link href="/" aria-label="Go to home page">
+              <Boxes className="w-10 h-10 text-black" />
+            </Link>
           </div>
         </CardHeader>
         <CardContent>
@@ -162,7 +159,7 @@ export default function SignUpPage() {
                 clipRule="evenodd"
               />
             </svg>
-            Github
+            GitHub
           </Button>
           <Button variant="link" className="w-full text-black">
             <Link href="/sign-in">Log in to an existing account</Link>
