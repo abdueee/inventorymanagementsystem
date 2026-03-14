@@ -10,7 +10,7 @@ import {
   PlusSquare,
   Settings,
 } from "lucide-react";
-import { signOut } from "@/lib/actions/auth-actions";
+import { authClient } from "@/lib/auth-client";
 import {
   Sidebar,
   SidebarContent,
@@ -58,8 +58,9 @@ export function AppSidebar({ userName, userEmail }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const handleSignOut = async () => {
-    await signOut();
+    await authClient.signOut();
     router.push("/sign-in");
+    router.refresh();
   };
 
   return (

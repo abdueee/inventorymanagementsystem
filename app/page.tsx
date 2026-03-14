@@ -1,10 +1,22 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, BarChart3, Boxes, Package } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export default function Home() {
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
+  const isSignedIn = Boolean(session?.user);
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    router.push("/sign-in");
+    router.refresh();
+  };
+
   return (
     <div className="min-h-screen px-6 py-16 lg:py-24 flex items-center">
       <div className="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-2 items-center">
@@ -23,18 +35,31 @@ export default function Home() {
               size="lg"
               className="bg-black px-8 h-12 rounded-lg text-md"
             >
-              <Link href="/sign-up">
-                Get started for free <ArrowRight />
+              <Link href={isSignedIn ? "/dashboard" : "/sign-up"}>
+                {isSignedIn ? "Go to dashboard" : "Get started for free"}{" "}
+                <ArrowRight />
               </Link>
             </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="px-8 h-12 rounded-lg text-md"
-            >
-              <Link href="/sign-in">Log in</Link>
-            </Button>
+            {isSignedIn ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="px-8 h-12 rounded-lg text-md"
+                onClick={handleSignOut}
+              >
+                Log out
+              </Button>
+            ) : (
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="px-8 h-12 rounded-lg text-md"
+              >
+                <Link href="/sign-in">Log in</Link>
+              </Button>
+            )}
           </div>
         </div>
 

@@ -1,6 +1,5 @@
 "use server";
 
-import { headers } from "next/headers";
 import { auth } from "../auth";
 
 export const signUp = async (email: string, password: string, name: string) => {
@@ -32,11 +31,4 @@ export const signIn = async (email: string, password: string) => {
   } catch {
     return { user: null, error: "Invalid email or password." };
   }
-}
-
-export const signOut = async () => {
-  const result = await auth.api.signOut({
-    headers: await headers()
-  });
-  return result;
 }
