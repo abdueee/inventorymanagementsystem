@@ -3,6 +3,23 @@
 import { createProduct } from "@/lib/actions/product-actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type FilterOption = { id: string; name: string };
 
@@ -27,66 +44,80 @@ export function AddProductForm({
   }
 
   return (
-    <form action={handleSubmit} className="max-w-lg space-y-4">
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
+    <Card className="max-w-lg">
+      <CardHeader>
+        <CardTitle>New Product</CardTitle>
+        <CardDescription>Fill in the details for the new inventory item.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form action={handleSubmit} className="space-y-4">
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
 
-      <div className="space-y-1">
-        <label htmlFor="name" className="text-sm font-medium">Name</label>
-        <input id="name" name="name" required className="w-full rounded border px-3 py-2 text-sm" />
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input id="name" name="name" placeholder="Product name" required />
+          </div>
 
-      <div className="space-y-1">
-        <label htmlFor="description" className="text-sm font-medium">Description</label>
-        <input id="description" name="description" className="w-full rounded border px-3 py-2 text-sm" />
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Input id="description" name="description" placeholder="Optional description" />
+          </div>
 
-      <div className="space-y-1">
-        <label htmlFor="sku" className="text-sm font-medium">SKU</label>
-        <input id="sku" name="sku" required className="w-full rounded border px-3 py-2 text-sm" />
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="sku">SKU</Label>
+            <Input id="sku" name="sku" placeholder="e.g. ELEC-007" required />
+          </div>
 
-      <div className="space-y-1">
-        <label htmlFor="categoryId" className="text-sm font-medium">Category</label>
-        <select id="categoryId" name="categoryId" required className="w-full rounded border px-3 py-2 text-sm">
-          <option value="">Select category</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="categoryId">Category</Label>
+            <Select name="categoryId" required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      <div className="space-y-1">
-        <label htmlFor="locationId" className="text-sm font-medium">Location</label>
-        <select id="locationId" name="locationId" required className="w-full rounded border px-3 py-2 text-sm">
-          <option value="">Select location</option>
-          {locations.map((l) => (
-            <option key={l.id} value={l.id}>{l.name}</option>
-          ))}
-        </select>
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="locationId">Location</Label>
+            <Select name="locationId" required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent>
+                {locations.map((l) => (
+                  <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="space-y-1">
-          <label htmlFor="quantity" className="text-sm font-medium">Quantity</label>
-          <input id="quantity" name="quantity" type="number" defaultValue={0} required className="w-full rounded border px-3 py-2 text-sm" />
-        </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="quantity">Quantity</Label>
+              <Input id="quantity" name="quantity" type="number" defaultValue={0} required />
+            </div>
 
-        <div className="space-y-1">
-          <label htmlFor="price" className="text-sm font-medium">Price</label>
-          <input id="price" name="price" type="number" step="0.01" defaultValue={0} required className="w-full rounded border px-3 py-2 text-sm" />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="price">Price</Label>
+              <Input id="price" name="price" type="number" step="0.01" defaultValue={0} required />
+            </div>
 
-        <div className="space-y-1">
-          <label htmlFor="reorderThreshold" className="text-sm font-medium">Reorder At</label>
-          <input id="reorderThreshold" name="reorderThreshold" type="number" defaultValue={10} required className="w-full rounded border px-3 py-2 text-sm" />
-        </div>
-      </div>
+            <div className="space-y-2">
+              <Label htmlFor="reorderThreshold">Reorder At</Label>
+              <Input id="reorderThreshold" name="reorderThreshold" type="number" defaultValue={10} required />
+            </div>
+          </div>
 
-      <button type="submit" className="rounded bg-black px-4 py-2 text-sm text-white hover:bg-black/90">
-        Add Product
-      </button>
-    </form>
+          <Button type="submit" className="w-full">Add Product</Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

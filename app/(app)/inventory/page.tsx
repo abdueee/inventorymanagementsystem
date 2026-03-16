@@ -1,4 +1,14 @@
 import prisma from "@/lib/prisma";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export default async function InventoryPage() {
   const products = await prisma.product.findMany({
@@ -15,42 +25,49 @@ export default async function InventoryPage() {
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded border">
-        <table className="w-full text-sm">
-          <thead className="bg-muted text-left">
-            <tr>
-              <th className="px-4 py-2 font-medium">Name</th>
-              <th className="px-4 py-2 font-medium">SKU</th>
-              <th className="px-4 py-2 font-medium">Category</th>
-              <th className="px-4 py-2 font-medium">Location</th>
-              <th className="px-4 py-2 font-medium text-right">Qty</th>
-              <th className="px-4 py-2 font-medium text-right">Price</th>
-              <th className="px-4 py-2 font-medium text-right">Reorder At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => {
-              const lowStock = product.quantity <= product.reorderThreshold;
-              return (
-                <tr
-                  key={product.id}
-                  className={`border-t ${lowStock ? "bg-red-50 dark:bg-red-950/20" : ""}`}
-                >
-                  <td className="px-4 py-2 font-medium">{product.name}</td>
-                  <td className="px-4 py-2 text-muted-foreground">{product.sku}</td>
-                  <td className="px-4 py-2">{product.category.name}</td>
-                  <td className="px-4 py-2">{product.location.name}</td>
-                  <td className={`px-4 py-2 text-right ${lowStock ? "text-red-600 font-semibold" : ""}`}>
-                    {product.quantity}
-                  </td>
-                  <td className="px-4 py-2 text-right">${product.price.toFixed(2)}</td>
-                  <td className="px-4 py-2 text-right text-muted-foreground">{product.reorderThreshold}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Products</CardTitle>
+          <CardDescription>{products.length} items in inventory</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>SKU</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead className="text-right">Qty</TableHead>
+                <TableHead className="text-right">Price</TableHead>
+                <TableHead className="text-right">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products.map((product) => {
+                const lowStock = product.quantity <= product.reorderThreshold;
+                return (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{product.sku}</TableCell>
+                    <TableCell>{product.category.name}</TableCell>
+                    <TableCell>{product.location.name}</TableCell>
+                    <TableCell className="text-right">{product.quantity}</TableCell>
+                    <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">
+                      {lowStock ? (
+                        <Badge variant="destructive">Low Stock</Badge>
+                      ) : (
+                        <Badge variant="secondary">In Stock</Badge>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
