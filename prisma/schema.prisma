@@ -19,10 +19,12 @@ model User {
   email         String
   emailVerified Boolean   @default(false)
   image         String?
+  role          String    @default("staff")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  products      Product[]
 
   @@unique([email])
   @@map("user")
@@ -74,4 +76,46 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+
+  @@map("category")
+}
+
+model Location {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+
+  @@map("location")
+}
+
+model Product {
+  id               String   @id @default(cuid())
+  name             String
+  description      String?
+  sku              String   @unique
+  quantity         Int      @default(0)
+  price            Float
+  reorderThreshold Int      @default(10)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  locationId  String
+  location    Location @relation(fields: [locationId], references: [id])
+
+  createdById String
+  createdBy   User @relation(fields: [createdById], references: [id])
+
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([createdById])
+  @@map("product")
 }
