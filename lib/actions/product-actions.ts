@@ -1,9 +1,19 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 export async function createProduct(formData: FormData) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session || !session.user?.id) {
+    throw new Error("You must be signed in to create a product.");
+  }
+
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
   const sku = formData.get("sku") as string;
@@ -12,11 +22,6 @@ export async function createProduct(formData: FormData) {
   const quantity = parseInt(formData.get("quantity") as string) || 0;
   const price = parseFloat(formData.get("price") as string) || 0;
   const reorderThreshold = parseInt(formData.get("reorderThreshold") as string) || 10;
-
-  // TODO: get actual user ID from session
-  // For now, use the first user in the database
-  const user = await prisma.user.findFirst();
-  if (!user) throw new Error("No user found");
 
   await prisma.product.create({
     data: {
@@ -28,7 +33,7 @@ export async function createProduct(formData: FormData) {
       quantity,
       price,
       reorderThreshold,
-      createdById: user.id,
+      createdById: session.user.id,
     },
   });
 
