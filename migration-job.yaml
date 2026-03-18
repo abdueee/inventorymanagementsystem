@@ -10,6 +10,7 @@ spec:
       containers:
         - name: prisma-migrate
           image: joeria/trackventory-migrate:latest
+          imagePullPolicy: Always
           command: ["npx", "prisma", "migrate", "deploy"]
           env:
             - name: DATABASE_URL
