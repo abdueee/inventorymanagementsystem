@@ -1,0 +1,18 @@
+.git
+.gitignore
+.next
+node_modules
+npm-debug.log*
+
+.env
+.env.*
+
+coverage
+
+Dockerfile
+deployment.yaml
+service.yaml
+secret.yaml
+
+ECE 1779 Course Project Guidelines.pdf
+README.md
