@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { emitter } from "@/lib/sse/emitter";
 
 export async function createProduct(formData: FormData) {
   const session = await auth.api.getSession({
@@ -38,4 +39,6 @@ export async function createProduct(formData: FormData) {
   });
 
   revalidatePath("/inventory");
+  revalidatePath("/dashboard");
+  emitter.emit("inventory-updated");
 }
