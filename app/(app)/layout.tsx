@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { RealtimeProvider } from "@/components/realtime-provider";
 import { auth } from "@/lib/auth";
 
 export default async function DashboardLayout({
@@ -32,7 +33,9 @@ export default async function DashboardLayout({
             </p>
           </div>
         </header>
-        <div className="flex flex-1 flex-col p-4 md:p-6">{children}</div>
+        <div className="flex flex-1 flex-col p-4 md:p-6">
+          <RealtimeProvider>{children}</RealtimeProvider>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );
