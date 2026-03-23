@@ -31,32 +31,39 @@ const navigationItems = [
     title: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+    adminOnly: false,
   },
   {
     title: "Inventory",
     href: "/inventory",
     icon: Package2,
+    adminOnly: false,
   },
   {
     title: "Add Product",
     href: "/add-product",
     icon: PlusSquare,
+    adminOnly: true,
   },
   {
     title: "Settings",
     href: "/settings",
     icon: Settings,
+    adminOnly: true,
   },
 ];
 
 type AppSidebarProps = {
   userName?: string | null;
   userEmail?: string | null;
+  userRole?: string | null;
 };
 
-export function AppSidebar({ userName, userEmail }: AppSidebarProps) {
+export function AppSidebar({ userName, userEmail, userRole }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const isAdmin = userRole === "admin";
+
   const handleSignOut = async () => {
     await authClient.signOut();
     router.push("/sign-in");
@@ -89,7 +96,9 @@ export function AppSidebar({ userName, userEmail }: AppSidebarProps) {
           <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) => {
+              {navigationItems
+                .filter((item) => !item.adminOnly || isAdmin)
+                .map((item) => {
                 const Icon = item.icon;
                 const isActive =
                   item.href === "/dashboard"
@@ -126,6 +135,9 @@ export function AppSidebar({ userName, userEmail }: AppSidebarProps) {
                   </span>
                   <span className="truncate text-xs">
                     {userEmail ?? "Signed in"}
+                  </span>
+                  <span className="truncate text-xs uppercase tracking-wide text-sidebar-accent-foreground/80">
+                    {isAdmin ? "Admin" : "User"}
                   </span>
                 </div>
               </div>

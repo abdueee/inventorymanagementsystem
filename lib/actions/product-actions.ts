@@ -1,44 +1,103 @@
 "use server";
 
-import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { emitter } from "@/lib/sse/emitter";
 
-export async function createProduct(formData: FormData) {
+async function requireSession() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session || !session.user?.id) {
-    throw new Error("You must be signed in to create a product.");
+    throw new Error("You must be signed in to manage inventory.");
   }
 
-  const name = formData.get("name") as string;
-  const description = formData.get("description") as string;
-  const sku = formData.get("sku") as string;
-  const categoryId = formData.get("categoryId") as string;
-  const locationId = formData.get("locationId") as string;
-  const quantity = parseInt(formData.get("quantity") as string) || 0;
-  const price = parseFloat(formData.get("price") as string) || 0;
-  const reorderThreshold = parseInt(formData.get("reorderThreshold") as string) || 10;
+  return session;
+}
+
+async function requireAdminSession() {
+  const session = await requireSession();
+
+  if (session.user.role !== "admin") {
+    throw new Error("Only admins can manage products.");
+  }
+
+  return session;
+}
+
+function getProductPayload(formData: FormData) {
+  return {
+    name: (formData.get("name") as string) ?? "",
+    description: (formData.get("description") as string) ?? "",
+    sku: (formData.get("sku") as string) ?? "",
+    categoryId: (formData.get("categoryId") as string) ?? "",
+    locationId: (formData.get("locationId") as string) ?? "",
+    quantity: parseInt(formData.get("quantity") as string) || 0,
+    price: parseFloat(formData.get("price") as string) || 0,
+    reorderThreshold: parseInt(formData.get("reorderThreshold") as string) || 10,
+  };
+}
+
+function refreshProductViews() {
+  revalidatePath("/inventory");
+  revalidatePath("/dashboard");
+  emitter.emit("inventory-updated");
+}
+
+export async function createProduct(formData: FormData) {
+  const session = await requireAdminSession();
+  const product = getProductPayload(formData);
 
   await prisma.product.create({
     data: {
-      name,
-      description,
-      sku,
-      categoryId,
-      locationId,
-      quantity,
-      price,
-      reorderThreshold,
+      ...product,
       createdById: session.user.id,
     },
   });
 
-  revalidatePath("/inventory");
-  revalidatePath("/dashboard");
-  emitter.emit("inventory-updated");
+  refreshProductViews();
+}
+
+export async function updateProduct(productId: string, formData: FormData) {
+  await requireAdminSession();
+  const product = getProductPayload(formData);
+
+  await prisma.product.update({
+    where: { id: productId },
+    data: product,
+  });
+
+  refreshProductViews();
+}
+
+export async function deleteProduct(productId: string) {
+  await requireAdminSession();
+
+  await prisma.product.delete({
+    where: { id: productId },
+  });
+
+  refreshProductViews();
+}
+
+export async function updateProductQuantity(productId: string, quantity: number) {
+  const session = await requireSession();
+
+  if (session.user.role !== "admin" && session.user.role !== "user") {
+    throw new Error("You do not have permission to update product quantity.");
+  }
+
+  if (!Number.isInteger(quantity) || quantity < 0) {
+    throw new Error("Quantity must be a whole number greater than or equal to 0.");
+  }
+
+  await prisma.product.update({
+    where: { id: productId },
+    data: { quantity },
+  });
+
+  refreshProductViews();
 }
