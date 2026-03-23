@@ -23,6 +23,7 @@ export default async function DashboardLayout({
       <AppSidebar
         userName={session.user.name}
         userEmail={session.user.email}
+        userRole={session.user.role}
       />
       <SidebarInset>
         <header className="flex h-16 items-center gap-3 border-b px-4 md:px-6">

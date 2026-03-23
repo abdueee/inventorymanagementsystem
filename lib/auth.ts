@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin } from "better-auth/plugins";
 import prisma from "./prisma";
 import { nextCookies } from "better-auth/next-js";
 
@@ -26,5 +27,10 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
     }
   },
-  plugins: [nextCookies()],
+  plugins: [
+    admin({
+      defaultRole: "user",
+    }),
+    nextCookies(),
+  ],
 });

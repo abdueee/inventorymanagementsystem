@@ -1,7 +1,22 @@
+import { auth } from "@/lib/auth";
+import { ProductForm } from "@/components/product-form";
 import prisma from "@/lib/prisma";
-import { AddProductForm } from "./add-product-form";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function AddProductPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
+  if (session.user.role !== "admin") {
+    redirect("/inventory");
+  }
+
   const [categories, locations] = await Promise.all([
     prisma.category.findMany({ orderBy: { name: "asc" } }),
     prisma.location.findMany({ orderBy: { name: "asc" } }),
@@ -15,7 +30,7 @@ export default async function AddProductPage() {
           Use this space to add the details for a new inventory item.
         </p>
       </div>
-      <AddProductForm categories={categories} locations={locations} />
+      <ProductForm mode="create" categories={categories} locations={locations} />
     </div>
   );
 }
