@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: joeria/trackventory-app:latest
+          image: joeria/trackventory-app:v2
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

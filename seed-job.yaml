@@ -1,17 +1,17 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: prisma-migrate
+  name: prisma-seed
 spec:
   backoffLimit: 3
   template:
     spec:
       restartPolicy: Never
       containers:
-        - name: prisma-migrate
+        - name: prisma-seed
           image: joeria/trackventory-migrate:v2
           imagePullPolicy: Always
-          command: ["npx", "prisma", "migrate", "deploy"]
+          command: ["npm", "run", "seed"]
           env:
             - name: DATABASE_URL
               valueFrom:
