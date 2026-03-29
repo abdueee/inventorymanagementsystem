@@ -1,28 +1,27 @@
-type Listener = (event: string, data?: string) => void;
+import Redis from "ioredis";
 
-const globalForEmitter = globalThis as unknown as {
-  sseEmitter: {
-    listeners: Set<Listener>;
-    emit: (event: string, data?: string) => void;
-    subscribe: (listener: Listener) => () => void;
-  };
+const CHANNEL = "inventory-updated";
+
+const globalForRedis = globalThis as unknown as {
+  redisPublisher: Redis;
 };
 
-if (!globalForEmitter.sseEmitter) {
-  const listeners = new Set<Listener>();
-
-  globalForEmitter.sseEmitter = {
-    listeners,
-    emit(event: string, data?: string) {
-      listeners.forEach((listener) => listener(event, data));
-    },
-    subscribe(listener: Listener) {
-      listeners.add(listener);
-      return () => {
-        listeners.delete(listener);
-      };
-    },
-  };
+// Singleton publisher — used by server actions to publish events
+if (!globalForRedis.redisPublisher) {
+  globalForRedis.redisPublisher = new Redis(process.env.REDIS_URL!);
 }
 
-export const emitter = globalForEmitter.sseEmitter;
+export const publisher = globalForRedis.redisPublisher;
+
+// Each SSE connection creates its own subscriber instance.
+// Redis requires a dedicated connection per subscriber (can't share with publisher).
+export function createSubscriber() {
+  return new Redis(process.env.REDIS_URL!);
+}
+
+export { CHANNEL };
+
+// Convenience function called by server actions
+export async function emitInventoryUpdate() {
+  await publisher.publish(CHANNEL, "inventory-updated");
+}

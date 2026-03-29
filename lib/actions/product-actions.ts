@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { emitter } from "@/lib/sse/emitter";
+import { emitInventoryUpdate } from "@/lib/sse/emitter";
 
 async function requireSession() {
   const session = await auth.api.getSession({
@@ -41,10 +41,10 @@ function getProductPayload(formData: FormData) {
   };
 }
 
-function refreshProductViews() {
+async function refreshProductViews() {
   revalidatePath("/inventory");
   revalidatePath("/dashboard");
-  emitter.emit("inventory-updated");
+  await emitInventoryUpdate();
 }
 
 export async function createProduct(formData: FormData) {
@@ -58,7 +58,7 @@ export async function createProduct(formData: FormData) {
     },
   });
 
-  refreshProductViews();
+  await refreshProductViews();
 }
 
 export async function updateProduct(productId: string, formData: FormData) {
@@ -70,7 +70,7 @@ export async function updateProduct(productId: string, formData: FormData) {
     data: product,
   });
 
-  refreshProductViews();
+  await refreshProductViews();
 }
 
 export async function deleteProduct(productId: string) {
@@ -80,7 +80,7 @@ export async function deleteProduct(productId: string) {
     where: { id: productId },
   });
 
-  refreshProductViews();
+  await refreshProductViews();
 }
 
 export async function updateProductQuantity(productId: string, quantity: number) {
@@ -99,5 +99,5 @@ export async function updateProductQuantity(productId: string, quantity: number)
     data: { quantity },
   });
 
-  refreshProductViews();
+  await refreshProductViews();
 }
