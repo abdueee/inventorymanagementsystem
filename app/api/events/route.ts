@@ -1,71 +1,51 @@
-import { emitter } from "@/lib/sse/emitter";
+import { createSubscriber, CHANNEL } from "@/lib/sse/emitter";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  let cleanup = () => { };
+  const subscriber = createSubscriber();
 
   const stream = new ReadableStream({
-    start(controller) {
+    async start(controller) {
       const encoder = new TextEncoder();
       let isClosed = false;
       let intervalId: ReturnType<typeof setInterval> | null = null;
-      let unsubscribe = () => { };
 
-      cleanup = () => {
-        if (isClosed) {
-          return;
-        }
-
+      const cleanup = () => {
+        if (isClosed) return;
         isClosed = true;
-
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
-
-        unsubscribe();
+        if (intervalId) clearInterval(intervalId);
+        subscriber.unsubscribe(CHANNEL);
+        subscriber.quit();
         req.signal.removeEventListener("abort", cleanup);
       };
 
       const send = (chunk: string) => {
-        if (isClosed) {
-          return false;
-        }
-
+        if (isClosed) return;
         try {
           controller.enqueue(encoder.encode(chunk));
-          return true;
         } catch {
           cleanup();
-          return false;
         }
       };
 
-      // Send initial connection message
-      if (!send("data: connected\n\n")) {
-        return;
-      }
+      // Send initial connection confirmation
+      send("data: connected\n\n");
 
-      // Listen for events from the emitter
-      unsubscribe = emitter.subscribe((event, data) => {
-        const payload = JSON.stringify({ event, data });
-        send(`data: ${payload}\n\n`);
+      // Subscribe to the Redis channel — fires whenever any pod publishes
+      await subscriber.subscribe(CHANNEL);
+      subscriber.on("message", (_channel: string, _message: string) => {
+        send(`data: ${JSON.stringify({ event: "inventory-updated" })}\n\n`);
       });
 
-      // Clean up when client disconnects
-      intervalId = setInterval(() => {
-        send(": keepalive\n\n");
-      }, 30000);
-
-      if (req.signal.aborted) {
-        cleanup();
-        return;
-      }
+      // Keepalive ping every 30s to prevent connection timeouts
+      intervalId = setInterval(() => send(": keepalive\n\n"), 30000);
 
       req.signal.addEventListener("abort", cleanup);
     },
     cancel() {
-      cleanup();
+      subscriber.unsubscribe(CHANNEL);
+      subscriber.quit();
     },
   });
 

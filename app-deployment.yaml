@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: joeria/trackventory-app:v2
+          image: abdueeee/trackventory-app:v3
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -54,6 +54,8 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: GOOGLE_CLIENT_SECRET
+            - name: REDIS_URL
+              value: redis://redis:6379
             - name: NODE_ENV
               value: production
             - name: PORT
