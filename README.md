@@ -76,16 +76,16 @@ The project is containerized with Docker using a multi-stage build, and Docker C
 - **Access**: Navigate to the deployed app URL running on DigitalOcean.
 - **Redirect**: If you are not logged in, you will be automatically redirected to the sign-up page.
 
-![Landing Page](docs/image1.png)
+![Landing Page](docs/landing page.png)
 
 ### 2. Authentication
 
 - **Sign Up**: Create an account using your name, email, and password. All new accounts are assigned the **Staff** role by default.
 - **Sign In**: Log in with your registered email and password, or use **Google** or **GitHub** SSO options.
 
-![Sign Up Page](docs/image2.png)
+![Sign Up Page](docs/signup.png)
 
-![Sign In Page](docs/image3.png)
+![Sign In Page](docs/login.png)
 
 ### 3. Dashboard
 
@@ -97,7 +97,7 @@ The Dashboard serves as the landing page after signing in and displays key metri
 - **Total Inventory Value**: The combined value of all stock.
 - **Low Stock Alerts**: A table listing all items that need immediate attention.
 
-![Dashboard](docs/image4.png)
+![Dashboard](docs/dashboard.png)
 
 ### 4. Inventory Page
 
@@ -106,14 +106,14 @@ The Inventory page shows the full product table including name, SKU, category, l
 - **Stock Status**: Items at or below threshold are marked **Low Stock** in red; others are marked **In Stock**.
 - **Edit a Product (Admin only)**: Click the edit icon on any row to update product details.
 
-![Inventory Page](docs/image5.png)
+![Inventory Page](docs/inventory.png)
 
-![Edit Product](docs/image6.png)
+![Edit Product](docs/edit product.png)
 
 - **Delete a Product (Admin only)**: Click the delete icon to permanently remove a product.
 - **Update Stock Quantity (Staff and Admin)**: Staff members can adjust quantities directly from the inventory table.
 
-![Update Stock Quantity](docs/image7.png)
+![Update Stock Quantity](docs/inventory-edit-qty.png)
 
 ### 5. Add Product (Admin only)
 
@@ -123,19 +123,19 @@ Admins can add new items by navigating to **Add Product** in the sidebar and fil
 - **Categorization**: Category and Location dropdowns.
 - **Inventory Levels**: Quantity, Price, and Reorder Threshold.
 
-![Add Product](docs/image8.png)
+![Add Product](docs/addproduct.png)
 
 ### 6. Real-Time Updates
 
 When any user adds, edits, or deletes a product, all other logged-in users see the Inventory and Dashboard update automatically without a manual refresh. This is powered by Server-Sent Events with Redis pub/sub.
 
-![Real-Time Updates](docs/image9.png)
+![Real-Time Updates](docs/liveupdates.png)
 
 ### 7. User Management (Admin only)
 
 Admins can view all registered users and promote or demote their roles between Staff and Admin from the Settings page.
 
-![User Management](docs/image10.png)
+![User Management](docs/usermgmt.png)
 
 ## Development Guide
 
