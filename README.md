@@ -76,7 +76,7 @@ The project is containerized with Docker using a multi-stage build, and Docker C
 - **Access**: Navigate to the deployed app URL running on DigitalOcean.
 - **Redirect**: If you are not logged in, you will be automatically redirected to the sign-up page.
 
-![Landing Page](docs/landing page.png)
+![Landing Page](docs/landing-page.png)
 
 ### 2. Authentication
 
@@ -108,7 +108,7 @@ The Inventory page shows the full product table including name, SKU, category, l
 
 ![Inventory Page](docs/inventory.png)
 
-![Edit Product](docs/edit product.png)
+![Edit Product](docs/edit-product.png)
 
 - **Delete a Product (Admin only)**: Click the delete icon to permanently remove a product.
 - **Update Stock Quantity (Staff and Admin)**: Staff members can adjust quantities directly from the inventory table.
@@ -374,7 +374,7 @@ Video URL (Google Drive): [Demo Video](https://drive.google.com/file/d/1m7cYvU-Q
 
 AI was used selectively across three areas, after our team had already established the core architecture and design direction.
 
-The primary use was debugging. When features broke in ways that were difficult to trace, we used AI to help reason through root causes. This included diagnosing why SSE real-time updates were failing intermittently after deploying to Kubernetes — which led us to identify that our in-memory EventEmitter singleton could not broadcast across multiple pods, and to adopt a Redis pub/sub solution using ioredis. We also used AI to work through Minikube image pull failures and authentication configuration mismatches, and to think through how to structure RBAC using Better Auth's admin plugin.
+The primary use was debugging. When features broke in ways that were difficult to trace, we used AI to help reason through root causes. This included diagnosing why SSE real-time updates were failing intermittently after deploying to Kubernetes which led us to identify that our in-memory EventEmitter singleton could not broadcast across multiple pods, and to adopt a Redis pub/sub solution using ioredis. We also used AI to work through Minikube image pull failures and authentication configuration mismatches, and to think through how to structure RBAC using Better Auth's admin plugin.
 
 The second use was code generation. We used AI to generate and iterate on ShadCN UI components, and to help scaffold parts of the SSE and Redis integration after we had decided on the approach. The third use was architecture exploration early in the project. We initially considered a separate React frontend with an Express backend, but used AI to think through the tradeoffs and concluded that a full-stack Next.js approach using the App Router would eliminate unnecessary WebSocket and CORS configuration overhead while keeping the codebase unified.
 
