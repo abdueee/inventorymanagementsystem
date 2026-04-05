@@ -14,10 +14,22 @@ spec:
     spec:
       containers:
         - name: app
-          image: abdueeee/trackventory-app:v3
+          image: joeria/trackventory-app:v2
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
           env:
             - name: DATABASE_URL
               valueFrom:
